@@ -1,0 +1,48 @@
+/* Styles for the game board */
+.board {
+  border: 2px solid black;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.board:nth-child(2) {
+  margin: 0 20px; /* Adjust margin between boards */
+}
+
+.board h2 {
+  margin-bottom: 5px;
+}
+
+.board-row {
+  display: flex;
+}
+
+.board-cell {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 2px;
+}
+
+.board-cell.ship {
+  background-color: gray;
+}
+
+.board .board-cell.ship-placed {
+  background-color: #6ca0ff;
+}
+
+.board-cell.hit {
+  background-color: red;
+}
+
+.board-cell.miss {
+  background-color: white;
+}
+
+/* Additional styles can be added as needed */

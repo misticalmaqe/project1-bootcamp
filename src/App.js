@@ -1,20 +1,15 @@
+// App.js
 import React from "react";
-import logo from "./logo.png";
+import BattleshipGame from "./BattleshipGame";
 import "./App.css";
 
-class App extends React.Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-        </header>
-      </div>
-    );
-  }
+function App() {
+  return (
+    <div className="App">
+      <h1>Battleship Game</h1>
+      <BattleshipGame />
+    </div>
+  );
 }
 
 export default App;
