@@ -17,14 +17,14 @@ class BattleshipGame extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      player1Board: this.initializeEmptyBoard(),
-      computerPlacementBoard: this.initializeEmptyBoard(),
       player1PlacementBoard: this.initializeEmptyBoard(),
+      computerPlacementBoard: this.initializeEmptyBoard(),
       computerHits: 0,
       selectedShip: null,
       selectedOrientation: "horizontal",
       gameStarted: false,
       placedShips: {},
+      currentPlayer: "player",
     };
   }
 
@@ -212,26 +212,27 @@ class BattleshipGame extends Component {
 
   render() {
     const {
-      player1Board,
       computerPlacementBoard,
       player1PlacementBoard,
       selectedShip,
       selectedOrientation,
       gameStarted,
+      currentPlayer,
     } = this.state;
+
+    const player1PlacementBoardStyle = {
+      border: `2px solid ${currentPlayer === "player" ? "green" : "red"}`,
+    };
 
     return (
       <div className="battleship-container">
         <div className="board-container">
           <div>
-            <Board board={player1Board} label="Player 1 Board" />
-          </div>
-
-          <div>
             <Board
               board={player1PlacementBoard}
               label="Player 1 Placement Board"
               onClick={this.handlePlayerPlacement}
+              style={player1PlacementBoardStyle}
             />
           </div>
 
@@ -240,8 +241,9 @@ class BattleshipGame extends Component {
               board={computerPlacementBoard}
               label="Computer Placement Board"
               onClick={(row, col) => {
-                if (gameStarted) {
+                if (gameStarted && currentPlayer === "computer") {
                   this.handlePlayerShot(row, col);
+                  this.setState({ currentPlayer: "player" });
                 }
               }}
             />
