@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import Board from "./Board.js";
+import Board from "./Board";
+import "./Board.css";
 import "./BattleshipGame.css";
 
 const BOARD_SIZE = 10;
@@ -19,17 +20,15 @@ class BattleshipGame extends Component {
     this.state = {
       player1PlacementBoard: this.initializeEmptyBoard(),
       computerPlacementBoard: this.initializeEmptyBoard(),
-      computerHits: 0,
       selectedShip: null,
       selectedOrientation: "horizontal",
       gameStarted: false,
       placedShips: {},
-      currentPlayer: "player",
+      gameOver: false,
+      playerTurn: true,
       clickedCells: Array.from({ length: BOARD_SIZE }, () =>
         Array(BOARD_SIZE).fill(false)
       ),
-      gameOver: false,
-      playerTurn: true,
     };
   }
 
@@ -56,16 +55,21 @@ class BattleshipGame extends Component {
       return;
     }
 
-    this.setState((prevState) => ({
-      placedShips: {
-        ...prevState.placedShips,
-        [shipType]: true,
-      },
-    }));
+    for (let i = 0; i < shipSize; i++) {
+      if (
+        (orientation === "horizontal" &&
+          this.state.player1PlacementBoard[row][col + i] === "S") ||
+        (orientation === "vertical" &&
+          this.state.player1PlacementBoard[row + i][col] === "S")
+      ) {
+        alert("Cannot place the ship in this position.");
+        return;
+      }
+    }
 
-    const newPlayer1PlacementBoard = this.state.player1PlacementBoard.map(
-      (rowArray, rowIndex) => {
-        return rowArray.map((cell, colIndex) => {
+    const updatedPlayer1PlacementBoard = this.state.player1PlacementBoard.map(
+      (boardRow, rowIndex) => {
+        return boardRow.map((cell, colIndex) => {
           if (
             (orientation === "horizontal" &&
               rowIndex === row &&
@@ -83,9 +87,13 @@ class BattleshipGame extends Component {
       }
     );
 
-    this.setState({
-      player1PlacementBoard: newPlayer1PlacementBoard,
-    });
+    this.setState((prevState) => ({
+      placedShips: {
+        ...prevState.placedShips,
+        [shipType]: true,
+      },
+      player1PlacementBoard: updatedPlayer1PlacementBoard,
+    }));
   };
 
   handleShipSelection = (ship) => {
@@ -103,72 +111,25 @@ class BattleshipGame extends Component {
       selectedShip &&
       selectedOrientation &&
       !clickedCells[row][col] &&
-      this.state.currentPlayer === "player" &&
+      this.state.playerTurn &&
       !this.state.gameOver
     ) {
       this.placeShip(selectedShip, row, col, selectedOrientation);
-      clickedCells[row][col] = true;
+
+      const updatedClickedCells = clickedCells.map((rowArray, rowIndex) => {
+        return rowIndex === row
+          ? rowArray.map((_, columnIndex) => columnIndex === col)
+          : rowArray;
+      });
 
       this.setState({
-        clickedCells: clickedCells,
+        clickedCells: updatedClickedCells,
       });
     }
   };
 
-  handlePlayerShot = (row, col) => {
-    const {
-      computerPlacementBoard,
-      computerHits,
-      clickedCells,
-      currentPlayer,
-      gameOver,
-      playerTurn,
-    } = this.state;
-
-    if (!playerTurn || clickedCells[row][col] || gameOver) {
-      return;
-    }
-
-    const updatedComputerPlacementBoard = computerPlacementBoard.map(
-      (rowArray, rowIndex) => {
-        return rowArray.map((cell, colIndex) => {
-          if (rowIndex === row && colIndex === col) {
-            return cell === "S" ? "X" : "O";
-          }
-          return cell;
-        });
-      }
-    );
-
-    clickedCells[row][col] = true;
-
-    this.setState(
-      {
-        computerHits:
-          this.state.computerHits +
-          (computerPlacementBoard[row][col] === "S" ? 1 : 0),
-        computerPlacementBoard: updatedComputerPlacementBoard,
-        clickedCells: clickedCells,
-        currentPlayer: "computer",
-        playerTurn: false,
-      },
-      () => {
-        const allShipsSunk = this.checkAllShipsSunk(
-          this.state.computerPlacementBoard
-        );
-
-        if (allShipsSunk) {
-          alert("Player wins!");
-          this.setState({ gameOver: true });
-        } else {
-          this.playComputerTurn();
-        }
-      }
-    );
-  };
-
   playComputerTurn = () => {
-    const { player1PlacementBoard, clickedCells } = this.state;
+    const { player1PlacementBoard } = this.state;
 
     if (!this.state.playerTurn) {
       let randomRow, randomCol;
@@ -176,7 +137,10 @@ class BattleshipGame extends Component {
       do {
         randomRow = Math.floor(Math.random() * BOARD_SIZE);
         randomCol = Math.floor(Math.random() * BOARD_SIZE);
-      } while (clickedCells[randomRow][randomCol]);
+      } while (
+        player1PlacementBoard[randomRow][randomCol] === "H" ||
+        player1PlacementBoard[randomRow][randomCol] === "M"
+      );
 
       const updatedPlayer1PlacementBoard = player1PlacementBoard.map(
         (rowArray, rowIndex) => {
@@ -189,13 +153,9 @@ class BattleshipGame extends Component {
         }
       );
 
-      clickedCells[randomRow][randomCol] = true;
-
       this.setState(
         {
           player1PlacementBoard: updatedPlayer1PlacementBoard,
-          currentPlayer: "player",
-          clickedCells: clickedCells,
           playerTurn: true,
         },
         () => {
@@ -205,8 +165,6 @@ class BattleshipGame extends Component {
           if (allShipsSunk) {
             alert("Computer wins!");
             this.setState({ gameOver: true });
-          } else {
-            setTimeout(() => this.playComputerTurn(), 100);
           }
         }
       );
@@ -214,14 +172,7 @@ class BattleshipGame extends Component {
   };
 
   checkAllShipsSunk = (board) => {
-    for (let i = 0; i < BOARD_SIZE; i++) {
-      for (let j = 0; j < BOARD_SIZE; j++) {
-        if (board[i][j] === "S") {
-          return false;
-        }
-      }
-    }
-    return true;
+    return board.flat().every((cell) => cell !== "S");
   };
 
   generateRandomLocation = () => {
@@ -295,10 +246,14 @@ class BattleshipGame extends Component {
       return;
     }
 
-    this.setState({ gameStarted: true }, () => {
-      this.placeComputerShips();
-      this.playComputerTurn();
-    });
+    this.setState(
+      {
+        gameStarted: true,
+      },
+      () => {
+        this.placeComputerShips();
+      }
+    );
   };
 
   reloadPage = () => {
@@ -307,50 +262,6 @@ class BattleshipGame extends Component {
 
   simulateComputerWin = () => {
     const { computerPlacementBoard } = this.state;
-
-    for (const ship of SHIPS) {
-      const shipSize = SHIP_SIZES[ship];
-      let success = false;
-
-      while (!success) {
-        const randomRow = Math.floor(Math.random() * BOARD_SIZE);
-        const randomCol = Math.floor(Math.random() * BOARD_SIZE);
-        const randomOrientation =
-          Math.floor(Math.random() * 2) === 0 ? "horizontal" : "vertical";
-
-        let canPlaceShip = true;
-
-        if (
-          (randomOrientation === "horizontal" &&
-            randomCol + shipSize <= BOARD_SIZE) ||
-          (randomOrientation === "vertical" &&
-            randomRow + shipSize <= BOARD_SIZE)
-        ) {
-          for (let i = 0; i < shipSize; i++) {
-            if (
-              (randomOrientation === "horizontal" &&
-                computerPlacementBoard[randomRow][randomCol + i] !== null) ||
-              (randomOrientation === "vertical" &&
-                computerPlacementBoard[randomRow + i][randomCol] !== null)
-            ) {
-              canPlaceShip = false;
-              break;
-            }
-          }
-
-          if (canPlaceShip) {
-            for (let i = 0; i < shipSize; i++) {
-              if (randomOrientation === "horizontal") {
-                computerPlacementBoard[randomRow][randomCol + i] = "S";
-              } else {
-                computerPlacementBoard[randomRow + i][randomCol] = "S";
-              }
-            }
-            success = true;
-          }
-        }
-      }
-    }
 
     for (let i = 0; i < BOARD_SIZE; i++) {
       for (let j = 0; j < BOARD_SIZE; j++) {
@@ -391,17 +302,6 @@ class BattleshipGame extends Component {
     this.setState({
       player1PlacementBoard: this.initializeEmptyBoard(),
       computerPlacementBoard: this.initializeEmptyBoard(),
-      computerHits: 0,
-      selectedShip: null,
-      selectedOrientation: "horizontal",
-      gameStarted: false,
-      placedShips: {},
-      currentPlayer: "player",
-      clickedCells: Array.from({ length: BOARD_SIZE }, () =>
-        Array(BOARD_SIZE).fill(false)
-      ),
-      gameOver: false,
-      playerTurn: true,
     });
 
     this.simulateComputerWin();
@@ -414,19 +314,17 @@ class BattleshipGame extends Component {
       selectedShip,
       selectedOrientation,
       gameStarted,
-      currentPlayer,
-      clickedCells,
     } = this.state;
 
     const player1PlacementBoardStyle = {
-      border: `2px solid ${currentPlayer === "player" ? "green" : "red"}`,
+      border: `2px solid ${this.state.playerTurn ? "green" : "red"}`,
     };
 
     return (
       <div className="battleship-container">
         <div className="game-info">
           <h3>{`It's ${
-            currentPlayer === "player" ? "Your" : "Computer's"
+            this.state.playerTurn ? "Your" : "Computer's"
           } Turn`}</h3>
         </div>
 
@@ -438,6 +336,8 @@ class BattleshipGame extends Component {
               onClick={this.handlePlayerPlacement}
               style={player1PlacementBoardStyle}
               disabled={gameStarted}
+              selectedShip={selectedShip}
+              selectedOrientation={selectedOrientation}
             />
           </div>
 
@@ -446,11 +346,13 @@ class BattleshipGame extends Component {
               board={computerPlacementBoard}
               label="Computer Placement Board"
               onClick={(row, col) => {
-                if (gameStarted && currentPlayer === "player") {
-                  this.handlePlayerShot(row, col);
+                if (gameStarted && !this.state.playerTurn) {
+                  this.playComputerTurn();
                 }
               }}
               disabled={gameStarted}
+              selectedShip={null}
+              selectedOrientation={null}
             />
           </div>
         </div>
