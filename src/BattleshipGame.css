@@ -1,10 +1,13 @@
-/* Styles for the Battleship game */
-
 .battleship-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 50px;
+  margin-top: 20px;
+  background-color: white; /* Set the background color for the grid */
+}
+
+.game-info {
+  margin-bottom: 10px;
 }
 
 .board-container {
@@ -14,7 +17,7 @@
 }
 
 .board {
-  border: 2px solid black;
+  border: 2px solid skyblue;
   padding: 10px;
   margin-bottom: 10px;
   position: relative;
@@ -35,7 +38,7 @@
 .board-cell {
   width: 30px;
   height: 30px;
-  border: 1px solid #000;
+  border: 1px solid rgb(59, 59, 196);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -59,21 +62,20 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: white; /* Adjust text color as needed */
+  color: blue; /* Adjust text color as needed */
   font-weight: bold;
   font-size: 16px; /* Adjust font size as needed */
   width: 100%;
   text-align: center;
 }
 
-.board-cell.hit {
-  background-color: red;
+board-cell.hit {
+  background-color: red; /* Set the background color for hits to red */
 }
 
 .board-cell.miss {
-  background-color: white;
+  background-color: skyblue; /* Set the background color for misses to sky blue */
 }
-
 .info {
   margin-top: 20px;
 }

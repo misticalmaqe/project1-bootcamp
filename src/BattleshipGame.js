@@ -25,6 +25,8 @@ class BattleshipGame extends Component {
       gameStarted: false,
       placedShips: {},
       currentPlayer: "player",
+      playerClicks: 0,
+      computerClicks: 0,
     };
   }
 
@@ -101,11 +103,12 @@ class BattleshipGame extends Component {
 
   handlePlayerShot = (row, col) => {
     const { computerPlacementBoard, computerHits } = this.state;
+
     const updatedComputerPlacementBoard = computerPlacementBoard.map(
       (rowArray, rowIndex) => {
         return rowArray.map((cell, colIndex) => {
           if (rowIndex === row && colIndex === col) {
-            return cell === "S" ? "X" : null;
+            return cell === "S" ? "X" : "O";
           }
           return cell;
         });
@@ -118,14 +121,42 @@ class BattleshipGame extends Component {
           prevState.computerHits +
           (computerPlacementBoard[row][col] === "S" ? 1 : 0),
         computerPlacementBoard: updatedComputerPlacementBoard,
+
+        playerClicks: prevState.playerClicks + 1,
       }),
       () => {
         const allShipsSunk = this.checkAllShipsSunk(this.state.computerHits);
         if (allShipsSunk) {
-          alert("Player wins!");
+          alert("Computer wins!");
+        } else {
+          this.handleComputerShot();
         }
       }
     );
+  };
+
+  handleComputerShot = () => {
+    const { player1PlacementBoard } = this.state;
+    const randomRow = Math.floor(Math.random() * BOARD_SIZE);
+    const randomCol = Math.floor(Math.random() * BOARD_SIZE);
+
+    const updatedPlayer1PlacementBoard = player1PlacementBoard.map(
+      (rowArray, rowIndex) => {
+        return rowArray.map((cell, colIndex) => {
+          if (rowIndex === randomRow && colIndex === randomCol) {
+            return cell === "S" ? "H" : "M";
+          }
+          return cell;
+        });
+      }
+    );
+
+    this.setState({
+      player1PlacementBoard: updatedPlayer1PlacementBoard,
+      currentPlayer: "player",
+
+      computerClicks: this.state.computerClicks + 1,
+    });
   };
 
   checkAllShipsSunk = (hits) => {
@@ -218,6 +249,8 @@ class BattleshipGame extends Component {
       selectedOrientation,
       gameStarted,
       currentPlayer,
+      playerClicks,
+      computerClicks,
     } = this.state;
 
     const player1PlacementBoardStyle = {
@@ -226,6 +259,14 @@ class BattleshipGame extends Component {
 
     return (
       <div className="battleship-container">
+        <div className="game-info">
+          <h3>{`Player clicks: ${playerClicks}`}</h3>
+          <h3>{`Computer clicks: ${computerClicks}`}</h3>
+          <h3>{`It's ${
+            currentPlayer === "player" ? "Your" : "Computer's"
+          } Turn`}</h3>
+        </div>
+
         <div className="board-container">
           <div>
             <Board
@@ -241,9 +282,8 @@ class BattleshipGame extends Component {
               board={computerPlacementBoard}
               label="Computer Placement Board"
               onClick={(row, col) => {
-                if (gameStarted && currentPlayer === "computer") {
+                if (gameStarted && currentPlayer === "player") {
                   this.handlePlayerShot(row, col);
-                  this.setState({ currentPlayer: "player" });
                 }
               }}
             />

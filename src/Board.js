@@ -1,19 +1,26 @@
 import React from "react";
-import "./Board.css";
 
-const Board = ({ board, label, onClick }) => {
+const Board = ({ board, label, onClick, style }) => {
   return (
-    <div className="board">
+    <div className="board" style={style}>
       <h2>{label}</h2>
       {board.map((row, rowIndex) => (
         <div className="board-row" key={rowIndex}>
           {row.map((cell, colIndex) => (
             <div
               key={colIndex}
-              className={`board-cell ${cell === "S" ? "ship-placed" : ""}`}
+              className={`board-cell ${
+                cell === "S"
+                  ? "ship"
+                  : cell === "X"
+                  ? "hit"
+                  : cell === null
+                  ? "miss"
+                  : ""
+              }`}
               onClick={() => onClick && onClick(rowIndex, colIndex)}
             >
-              {cell === "S" ? "S" : cell}
+              {cell === "S" || cell === "X" ? " " : ""}
             </div>
           ))}
         </div>
