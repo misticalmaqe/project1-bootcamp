@@ -1,27 +1,24 @@
 import React from "react";
+import "./Board.css";
 
-const Board = ({ board, label, onClick, style }) => {
+const Board = ({ board, label, onClick, style, disabled }) => {
+  const handleClick = (row, col) => {
+    if (!disabled) {
+      onClick(row, col);
+    }
+  };
+
   return (
     <div className="board" style={style}>
-      <h2>{label}</h2>
+      <div className="board-label">{label}</div>
       {board.map((row, rowIndex) => (
         <div className="board-row" key={rowIndex}>
           {row.map((cell, colIndex) => (
             <div
               key={colIndex}
-              className={`board-cell ${
-                cell === "S"
-                  ? "ship"
-                  : cell === "X"
-                  ? "hit"
-                  : cell === null
-                  ? "miss"
-                  : ""
-              }`}
-              onClick={() => onClick && onClick(rowIndex, colIndex)}
-            >
-              {cell === "S" || cell === "X" ? " " : ""}
-            </div>
+              className={`board-cell ${cell}`}
+              onClick={() => handleClick(rowIndex, colIndex)}
+            ></div>
           ))}
         </div>
       ))}
