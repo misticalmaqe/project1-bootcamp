@@ -350,7 +350,6 @@ class BattleshipGame extends Component {
                   this.playComputerTurn();
                 }
               }}
-              disabled={gameStarted}
               selectedShip={null}
               selectedOrientation={null}
             />

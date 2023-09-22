@@ -56,7 +56,8 @@
 }
 
 .board-cell.ship {
-  background-color: gray;
+  color: white;
+  background-color: blue;
 }
 
 .board-cell.ship-placed {
