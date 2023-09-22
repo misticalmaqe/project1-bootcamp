@@ -80,12 +80,12 @@
   text-align: center;
 }
 
-.board-cell.hit {
+.cell.hit {
   background-color: red;
 }
 
-.board-cell.miss {
-  background-color: skyblue;
+.cell.miss {
+  background-color: grey;
 }
 
 /* Additional info styles */

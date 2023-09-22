@@ -1,28 +1,38 @@
-// Board.js
-
 import React from "react";
 import PropTypes from "prop-types";
 import "./Board.css";
 
 const Board = ({ board, label, onClick, style, disabled }) => {
+  const renderCell = (rowIndex, colIndex) => {
+    const cellValue = board[rowIndex][colIndex];
+    let cellClass = "board-cell";
+
+    if (cellValue === "S") {
+      cellClass += " ship";
+    } else if (cellValue === "H") {
+      cellClass += " hit";
+    } else if (cellValue === "M") {
+      cellClass += " miss";
+    }
+
+    return (
+      <div
+        key={`${rowIndex}-${colIndex}`}
+        className={cellClass}
+        onClick={() => onClick(rowIndex, colIndex)}
+        style={{ cursor: disabled ? "default" : "pointer" }}
+      >
+        {cellValue === "S" ? "🚢" : null}
+      </div>
+    );
+  };
+
   return (
     <div className="board" style={style}>
       <h2>{label}</h2>
       {board.map((row, rowIndex) => (
         <div key={rowIndex} className="board-row">
-          {row.map((cell, colIndex) => (
-            <div
-              key={colIndex}
-              className={`board-cell ${cell}`}
-              onClick={() => {
-                if (!disabled && onClick) {
-                  onClick(rowIndex, colIndex);
-                }
-              }}
-            >
-              {cell === "S" ? <span>S</span> : null}
-            </div>
-          ))}
+          {row.map((_, colIndex) => renderCell(rowIndex, colIndex))}
         </div>
       ))}
     </div>
