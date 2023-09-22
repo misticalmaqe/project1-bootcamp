@@ -54,3 +54,60 @@
 .computer-ships {
   text-align: center;
 }
+/* Game controls button styles */
+.game-controls button {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.game-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Computer ships styles */
+.computer-ships h2 {
+  margin-bottom: 10px;
+}
+
+.computer-ships .board {
+  margin: 0 auto;
+}
+
+/* Player ships styles */
+.player-ships {
+  text-align: center;
+}
+
+.player-ships h2 {
+  margin-bottom: 10px;
+}
+
+.player-ships .board {
+  margin: 0 auto;
+}
+
+.player-ships .board-label {
+  font-size: 18px;
+}
+
+.player-ships .ship-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.player-ships .ship-info span {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+/* Additional info styles */
+.info {
+  text-align: center;
+  font-size: 18px;
+}
+
+.info p {
+  margin: 5px 0;
+}

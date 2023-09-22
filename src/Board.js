@@ -1,41 +1,40 @@
+// Board.js
+
 import React from "react";
+import PropTypes from "prop-types";
 import "./Board.css";
 
-const Board = ({
-  board,
-  label,
-  onClick,
-  style,
-  disabled,
-  selectedShip,
-  selectedOrientation,
-}) => {
-  const handleCellClick = (row, col) => {
-    if (!disabled) {
-      onClick(row, col, selectedShip, selectedOrientation);
-    }
-  };
-
+const Board = ({ board, label, onClick, style, disabled }) => {
   return (
     <div className="board" style={style}>
-      <div className="board-label">{label}</div>
-      <div className="board-grid">
-        {board.map((row, rowIndex) => (
-          <div className="board-row" key={rowIndex}>
-            {row.map((cell, colIndex) => (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                className={`board-cell ${cell === "S" ? "ship" : ""}`}
-                onClick={() => handleCellClick(rowIndex, colIndex)}
-              >
-                {cell}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      <h2>{label}</h2>
+      {board.map((row, rowIndex) => (
+        <div key={rowIndex} className="board-row">
+          {row.map((cell, colIndex) => (
+            <div
+              key={colIndex}
+              className={`board-cell ${cell}`}
+              onClick={() => {
+                if (!disabled && onClick) {
+                  onClick(rowIndex, colIndex);
+                }
+              }}
+            >
+              {cell === "S" ? <span>S</span> : null}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
+};
+
+Board.propTypes = {
+  board: PropTypes.array.isRequired,
+  label: PropTypes.string.isRequired,
+  onClick: PropTypes.func,
+  style: PropTypes.object,
+  disabled: PropTypes.bool,
 };
 
 export default Board;

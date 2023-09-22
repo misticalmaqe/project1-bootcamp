@@ -128,6 +128,37 @@ class BattleshipGame extends Component {
     }
   };
 
+  handleComputerPlacementClick = (row, col) => {
+    const { computerPlacementBoard, playerTurn, gameOver } = this.state;
+
+    if (!playerTurn || gameOver) return;
+
+    if (computerPlacementBoard[row][col] === "S") {
+      const updatedComputerPlacementBoard = computerPlacementBoard.map(
+        (rowArray, rowIndex) => {
+          return rowArray.map((cell, colIndex) => {
+            return rowIndex === row && colIndex === col ? "X" : cell;
+          });
+        }
+      );
+
+      this.setState(
+        {
+          computerPlacementBoard: updatedComputerPlacementBoard,
+        },
+        () => {
+          const allShipsSunk = this.checkAllShipsSunk(
+            updatedComputerPlacementBoard
+          );
+          if (allShipsSunk) {
+            alert("Player wins! All computer ships have been sunk.");
+            this.setState({ gameOver: true });
+          }
+        }
+      );
+    }
+  };
+
   playComputerTurn = () => {
     const { player1PlacementBoard } = this.state;
 
@@ -345,11 +376,7 @@ class BattleshipGame extends Component {
             <Board
               board={computerPlacementBoard}
               label="Computer Placement Board"
-              onClick={(row, col) => {
-                if (gameStarted && !this.state.playerTurn) {
-                  this.playComputerTurn();
-                }
-              }}
+              onClick={this.handleComputerPlacementClick}
               selectedShip={null}
               selectedOrientation={null}
             />
@@ -408,21 +435,9 @@ class BattleshipGame extends Component {
             Start Game
           </button>
           <button onClick={this.reloadPage}>Reload</button>
-          <button onClick={this.handleSimulateWinClick}>
-            Simulate Computer Win
-          </button>
-          <button onClick={this.simulatePlayerWin}>Simulate Player Win</button>
         </div>
-
-        {gameStarted && (
-          <div className="computer-ships">
-            <h2>Computer's Ship Placements</h2>
-            <Board board={computerPlacementBoard} label="Computer Board" />
-          </div>
-        )}
       </div>
     );
   }
 }
-
 export default BattleshipGame;
