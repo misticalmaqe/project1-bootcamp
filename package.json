@@ -2,12 +2,17 @@
   "name": "project1-bootcamp",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://misticalmaqe.github.io/project1-bootcamp",
   "dependencies": {
+    "gh": "^2.8.9",
+    "pages": "^0.0.16",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -b master -d build",
     "start": "react-scripts start",
     "build": "react-scripts build"
   },
